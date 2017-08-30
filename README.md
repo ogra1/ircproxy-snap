@@ -1,3 +1,5 @@
+[![Snap Status](https://build.snapcraft.io/badge/ogra1/ircproxy-snap.svg)](https://build.snapcraft.io/user/ogra1/ircproxy-snap)
+
 # ircproxy
 
 A simple ircproxy built around bip
