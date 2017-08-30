@@ -1,0 +1,28 @@
+name: ircproxy
+version: 0.1
+summary: a minimal IRC proxy using bip
+description: run the bip IRC proxy in a snap
+confinement: strict
+grade: stable
+
+apps:
+  ircproxy:
+    command: run-bip
+    daemon: simple
+    plugs: [network, network-bind]
+  bipmkpw:
+    command: usr/bin/bipmkpw
+
+parts:
+  ircproxy:
+    plugin: dump
+    prime:
+      - run-bip
+      - config.sh
+      - default.yaml
+      - etc
+      - lib
+      - usr
+    stage-packages:
+      - bip
+      - openssl

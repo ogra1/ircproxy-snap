@@ -1,0 +1,17 @@
+config:
+  ircproxy:
+    port: 7778
+    networks: ['freenode','irc.freenode.net','6667']
+    clientssl: true
+    sslcert:
+      country: US
+      state: Snappy State
+      locality: Sanppy Locality
+      org: Snappy Organization
+      domain: snappy-example.com
+    user:
+      nick: snappy-bip
+      user: snappy-bip
+      realname: Snappy User
+      connections: ['freenode','#snappy-bip']
+      password: 27a2a19cce06bd3a16c9b9ba5ad688909c58f393

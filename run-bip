@@ -1,0 +1,27 @@
+#! /bin/sh
+
+set -e
+
+CONF=$SNAP_DATA/bip.conf
+LOGDIR=$SNAP_DATA/log
+export HOME=$SNAP_DATA
+
+# if no config exists yet, put a default one in place
+if [ ! -e $CONF ]; then
+    $SNAP/config.sh
+fi
+
+# create log dir
+[ -d $LOGDIR ] || mkdir $LOGDIR
+
+# make sure we only ever run one instance
+if [ -e "$SNAP_DATA/bip.pid" ]; then
+    kill -9 "$(cat $SNAP_DATA/bip.pid)" || true
+    rm $SNAP_DATA/bip.pid || true
+fi
+
+# update log and pid path at every start
+sed "s:^pid_file.*:pid_file = \"$SNAP_DATA/bip.pid\";:" $CONF >$CONF.tmp 2>&1
+sed "s:^log_root.*:log_root = \"$LOGDIR\";:" $CONF.tmp >$CONF 2>&1
+
+exec $SNAP/usr/bin/bip -f $CONF -s $SNAP_DATA -n
