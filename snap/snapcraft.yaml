@@ -1,7 +1,15 @@
 name: ircproxy
 version: 0.1
-summary: a minimal IRC proxy using bip
-description: run the bip IRC proxy in a snap
+summary: A minimal IRC proxy using bip
+description: |
+    Run the bip IRC proxy in a snap.
+    The snap puts a default configuration in place and generates a fresh ssl key on first startup.
+    .
+    To configure the service edit the generated config in /var/snap/ircproxy/current/bip.conf
+    And restart the service with "sudo snap restart ircproxy"
+    .
+    To generate an IRC password to use with the config the snap also ships the "ircproxy.bipmkpw" tool.
+
 confinement: strict
 grade: stable
 
