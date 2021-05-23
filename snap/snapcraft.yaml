@@ -53,6 +53,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/doc/bip
       cp COPYING $SNAPCRAFT_PART_INSTALL/usr/share/doc/bip/copyright
     build-packages:
+      - bison
       - flex
       - libssl-dev
       - pkg-config
