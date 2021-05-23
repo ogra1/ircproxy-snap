@@ -1,5 +1,5 @@
 name: ircproxy
-version: 0.1
+adopt-info: ircproxy
 summary: A minimal IRC proxy using bip
 description: |
     Run the bip IRC proxy in a snap.
@@ -10,6 +10,7 @@ description: |
     .
     To generate an IRC password to use with the config the snap also ships the "ircproxy.bipmkpw" tool.
 
+base: core20
 confinement: strict
 grade: stable
 
@@ -21,16 +22,43 @@ apps:
   bipmkpw:
     command: usr/bin/bipmkpw
 
+layout:
+  /etc/ssl:
+    bind: $SNAP_DATA/ssl
+  /etc/ca-certificates:
+    bind: $SNAP/etc/ca-certificates
+  /etc/ca-certificates.conf:
+    bind-file: $SNAP_DATA/ca-certificates.conf
+  /usr/share/ca-certificates:
+    bind: $SNAP/usr/share/ca-certificates
+
 parts:
   ircproxy:
     plugin: dump
+    source: .
     prime:
       - run-bip
       - config.sh
       - default.yaml
       - etc
-      - lib
       - usr
+      - -etc/init.d
+      - -etc/default
+      - -usr/share/man
+      - -usr/share/lintian
+      - -lib/systemd/system
+      - -usr/share/doc/bip/examples
+      - -usr/share/doc/ca-certificates/examples
+    override-build: |
+      snapcraftctl build
+      CHLG="$SNAPCRAFT_PART_INSTALL/usr/share/doc/bip/changelog.Debian.gz"
+      VER="$(zgrep -m1 ^bip $CHLG | sed 's/^bip (//;s/).*$//')"
+      echo "setting version to $VER"
+      snapcraftctl set-version "$VER"
+      find $SNAPCRAFT_PART_INSTALL/usr/share/doc -depth -type f,l ! -name copyright|xargs rm
+      find $SNAPCRAFT_PART_INSTALL/usr/share/doc -empty|xargs rmdir
     stage-packages:
       - bip
+      - ca-certificates
+      - libssl1.1
       - openssl
