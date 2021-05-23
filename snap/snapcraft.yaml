@@ -54,6 +54,7 @@ parts:
       cp COPYING $SNAPCRAFT_PART_INSTALL/usr/share/doc/bip/copyright
     build-packages:
       - libssl-dev
+      - pkg-config
     prime:
       - -usr/share/man
       - -usr/share/doc/bip/examples
