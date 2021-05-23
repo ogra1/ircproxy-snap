@@ -1,5 +1,5 @@
 name: ircproxy
-adopt-info: ircproxy
+adopt-info: bip
 summary: A minimal IRC proxy using bip
 description: |
     Run the bip IRC proxy in a snap.
@@ -18,7 +18,9 @@ apps:
   ircproxy:
     command: run-bip
     daemon: simple
-    plugs: [network, network-bind]
+    plugs:
+      - network
+      - network-bind
   bipmkpw:
     command: usr/bin/bipmkpw
 
@@ -31,11 +33,34 @@ layout:
     bind-file: $SNAP_DATA/ca-certificates.conf
   /usr/share/ca-certificates:
     bind: $SNAP/usr/share/ca-certificates
+  /usr/lib/x86_64-linux-gnu/engines-1.1:
+    bind: $SNAP/usr/lib/x86_64-linux-gnu/engines-1.1
 
 parts:
+  bip:
+    plugin: autotools
+    source: https://vcs-git.duckcorp.org/projects/bip/bip.git
+    #source-tag: release-0.9.0-rc4
+    build-environment:
+      - CFLAGS: "-Wno-error"
+    autotools-configure-parameters:
+      - prefix="/usr"
+    override-build: |
+      snapcraftctl build
+      VER="$(grep AC_INIT configure.ac | cut -d',' -f2 | sed 's/\[//;s/\]//')"
+      echo "setting version to $VER"
+      snapcraftctl set-version "$VER"
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/doc/bip
+      cp COPYING $SNAPCRAFT_PART_INSTALL/usr/share/doc/bip/copyright
+    build-packages:
+      - libssl-dev
+    prime:
+      - -usr/share/man
+      - -usr/share/doc/bip/examples
   ircproxy:
     plugin: dump
     source: .
+    after: [ bip ]
     prime:
       - run-bip
       - config.sh
@@ -47,18 +72,12 @@ parts:
       - -usr/share/man
       - -usr/share/lintian
       - -lib/systemd/system
-      - -usr/share/doc/bip/examples
       - -usr/share/doc/ca-certificates/examples
     override-build: |
       snapcraftctl build
-      CHLG="$SNAPCRAFT_PART_INSTALL/usr/share/doc/bip/changelog.Debian.gz"
-      VER="$(zgrep -m1 ^bip $CHLG | sed 's/^bip (//;s/).*$//')"
-      echo "setting version to $VER"
-      snapcraftctl set-version "$VER"
       find $SNAPCRAFT_PART_INSTALL/usr/share/doc -depth -type f,l ! -name copyright|xargs rm
       find $SNAPCRAFT_PART_INSTALL/usr/share/doc -empty|xargs rmdir
     stage-packages:
-      - bip
       - ca-certificates
       - libssl1.1
       - openssl
