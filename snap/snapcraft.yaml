@@ -39,7 +39,7 @@ layout:
 parts:
   bip:
     plugin: autotools
-    source: https://vcs-git.duckcorp.org/projects/bip/bip.git
+    source: git://vcs-git.duckcorp.org/projects/bip/bip.git
     #source-tag: release-0.9.0-rc4
     build-environment:
       - CFLAGS: "-Wno-error"
